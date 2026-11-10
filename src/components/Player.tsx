@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Hls from "hls.js";
-import { fmtTime, hlsEnableWorker, playlist } from "../api";
+import { blockVideoSurface, fmtTime, hlsEnableWorker, playlist } from "../api";
 import { mediaResource, observeHls, usePlayerDiagnostics } from "../playbackDiagnostics";
 import { usePlaybackActivity } from "../usePlaybackActivity";
 import { useSeekInput } from "../useSeekInput";
@@ -178,6 +178,17 @@ export default function Player({
   };
 
   const pct = duration > 0 ? (seek.time / duration) * 100 : 0;
+
+  if (blockVideoSurface) {
+    return (
+      <div ref={wrapRef} className={`relative bg-black overflow-hidden ${className}`}>
+        {poster && <img src={poster} alt="" className="absolute inset-0 w-full h-full object-contain" />}
+        <div className="absolute left-3 right-3 bottom-4 z-10 rounded-lg bg-black/70 px-3 py-2 text-center text-[12px] leading-snug text-white/90">
+          雷电的图像接口一解码视频就会把画面卡死，这一版先停在封面上。
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={wrapRef} className={`relative bg-black overflow-hidden group ${className}`}>

@@ -1,6 +1,6 @@
 import React, { useEffect, useImperativeHandle, useRef, forwardRef, useState } from "react";
 import Hls from "hls.js";
-import { hlsEnableWorker, isLocalMedia, playlist } from "../api";
+import { blockVideoSurface, hlsEnableWorker, isLocalMedia, playlist } from "../api";
 import { mediaResource, observeHls, usePlayerDiagnostics } from "../playbackDiagnostics";
 import { usePlaybackActivity } from "../usePlaybackActivity";
 
@@ -314,6 +314,23 @@ const VideoSurface = forwardRef<VideoHandle, Props>(function VideoSurface(
   }, [src]);
 
   const hasTransform = scale !== 1 || panX !== 0 || panY !== 0;
+
+  if (blockVideoSurface) {
+    return (
+      <div className={`relative w-full h-full bg-black overflow-hidden ${className}`}>
+        {poster && (
+          <img
+            src={poster}
+            alt=""
+            className={`absolute inset-0 w-full h-full ${fit === "cover" ? "object-cover" : "object-contain"}`}
+          />
+        )}
+        <div className="absolute left-3 right-3 bottom-16 z-10 rounded-lg bg-black/70 px-3 py-2 text-center text-[12px] leading-snug text-white/90">
+          雷电的图像接口一解码视频就会把画面卡死，这一版先停在封面上。底部标签仍可切换。
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`relative w-full h-full bg-black overflow-hidden ${className}`}>

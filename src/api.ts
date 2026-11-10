@@ -28,6 +28,12 @@ export const isMobile = isAndroid || isIos;
  */
 export const hlsEnableWorker = !isAndroid && !isIos;
 
+/** 雷电等 x86 模拟器上禁止创建 WebView 视频解码面，否则画面会停在第一帧。启动前由 host_info 设置。 */
+export let blockVideoSurface = false;
+export function setBlockVideoSurface(value: boolean) {
+  blockVideoSurface = value;
+}
+
 /** 自定义协议地址随平台不同（见 tauri `register_asynchronous_uri_scheme_protocol` 文档）：
  *  Windows / Android → `http://<scheme>.localhost`
  *  macOS / iOS / Linux → `<scheme>://localhost`

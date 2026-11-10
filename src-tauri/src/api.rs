@@ -287,6 +287,19 @@ fn request_ios_orientation(landscape: bool) {
 
 /* ───────────────────────── 会话 ───────────────────────── */
 
+/// 给前端的宿主信息。雷电这类 x86 模拟器里，WebView 一旦把 H.264 接到
+/// `OMX.google.h264.decoder` 的 Surface，模拟器的图形通道会停住，整页不再重绘。
+/// 只在 Android x86/x86_64 上避开这个解码面；arm 真机和桌面照常播放。
+#[tauri::command]
+fn host_info() -> Value {
+    let block_video_surface = cfg!(target_os = "android")
+        && (cfg!(target_arch = "x86") || cfg!(target_arch = "x86_64"));
+    json!({
+        "arch": std::env::consts::ARCH,
+        "block_video_surface": block_video_surface,
+    })
+}
+
 #[tauri::command]
 pub async fn app_boot(state: State<'_, Api>) -> Result<Value, String> {
     let origin = base();

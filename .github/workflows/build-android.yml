@@ -5,6 +5,12 @@ name: Build Android APK
 # ANDROID_KEY_BASE64、ANDROID_KEY_ALIAS、ANDROID_KEYSTORE_PASSWORD、ANDROID_KEY_PASSWORD
 on:
   workflow_dispatch:
+    inputs:
+      targets:
+        description: "传给 tauri android build --target，默认三个 ABI"
+        required: false
+        default: "aarch64 armv7 x86_64"
+        type: string
 
 concurrency:
   group: android-apk-${{ github.ref }}
@@ -73,7 +79,7 @@ jobs:
         run: pnpm tauri android init --ci
 
       - name: 编译 APK（按 ABI 分包）
-        run: pnpm tauri android build --apk --split-per-abi --target aarch64 armv7 x86_64
+        run: pnpm tauri android build --apk --split-per-abi --target ${{ inputs.targets || 'aarch64 armv7 x86_64' }}
 
       - name: 签名 APK
         env:

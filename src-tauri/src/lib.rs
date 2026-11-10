@@ -131,6 +131,7 @@ pub fn run() {
             });
         })
         .invoke_handler(tauri::generate_handler![
+            api::host_info,
             api::app_boot,
             playback_log::playback_log_status,
             playback_log::playback_log_set,
