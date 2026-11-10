@@ -21,6 +21,12 @@ export const platform: "android" | "ios" | "windows" | "macos" | "linux" =
   isAndroid ? "android" : isIos ? "ios" : isMacos ? "macos" : isLinux ? "linux" : "windows";
 /** 移动端（安卓 / iOS）共用触屏界面 */
 export const isMobile = isAndroid || isIos;
+/**
+ * 桌面端用 Worker 做 HLS 转封装。
+ * iOS WKWebView 和安卓 WebView（雷电自带的旧 Chromium 也一样）里，
+ * Worker 再去请求自定义协议会把渲染线程卡死，所以这两端关掉。
+ */
+export const hlsEnableWorker = !isAndroid && !isIos;
 
 /** 自定义协议地址随平台不同（见 tauri `register_asynchronous_uri_scheme_protocol` 文档）：
  *  Windows / Android → `http://<scheme>.localhost`

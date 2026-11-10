@@ -1,6 +1,6 @@
 import React, { useEffect, useImperativeHandle, useRef, forwardRef, useState } from "react";
 import Hls from "hls.js";
-import { isLocalMedia, platform, playlist } from "../api";
+import { hlsEnableWorker, isLocalMedia, playlist } from "../api";
 import { mediaResource, observeHls, usePlayerDiagnostics } from "../playbackDiagnostics";
 import { usePlaybackActivity } from "../usePlaybackActivity";
 
@@ -167,7 +167,6 @@ const VideoSurface = forwardRef<VideoHandle, Props>(function VideoSurface(
     const proxied = isLocalMedia(src);
     const url = proxied ? src : playlist(src);
     const useHls = !url.includes("/seg?u=");
-    const isIos = platform === "ios";
     trace("source.load", { engine: useHls && Hls.isSupported() ? "hls.js" : "native", auto_play: autoPlay, resource: mediaResource(src) });
 
     /* 换源时先把音量/倍速套回去：hls 重新 attach 后浏览器会把它们重置成默认值 */
@@ -186,8 +185,7 @@ const VideoSurface = forwardRef<VideoHandle, Props>(function VideoSurface(
         interstitialsController: undefined,
         contentSteeringController: undefined,
         enableInterstitialPlayback: false,
-        // iOS WKWebView 下 WebWorker 跨自定义协议 hg:// 高频中断易死锁，关闭 Worker 走主线程加载更稳
-        enableWorker: !isIos,
+        enableWorker: hlsEnableWorker,
         // Prefer standard MSE on macOS; hls.js handles MMS-only fallback and seek recovery.
         preferManagedMediaSource: false,
         autoStartLoad: false,
