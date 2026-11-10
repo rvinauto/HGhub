@@ -291,7 +291,7 @@ fn request_ios_orientation(landscape: bool) {
 /// `OMX.google.h264.decoder` 的 Surface，模拟器的图形通道会停住，整页不再重绘。
 /// 只在 Android x86/x86_64 上避开这个解码面；arm 真机和桌面照常播放。
 #[tauri::command]
-fn host_info() -> Value {
+pub fn host_info() -> Value {
     let block_video_surface = cfg!(target_os = "android")
         && (cfg!(target_arch = "x86") || cfg!(target_arch = "x86_64"));
     json!({
